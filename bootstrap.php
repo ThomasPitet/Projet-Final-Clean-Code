@@ -2,15 +2,20 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/src/Customer.php';
-require_once __DIR__ . '/src/Ticket.php';
-require_once __DIR__ . '/src/DiscountCalculator.php';
-require_once __DIR__ . '/src/BookingItem.php';
-require_once __DIR__ . '/src/Booking.php';
-require_once __DIR__ . '/src/StripeClient.php';
-require_once __DIR__ . '/src/PayFastSdk.php';
-require_once __DIR__ . '/src/EmailService.php';
-require_once __DIR__ . '/src/SmsClient.php';
-require_once __DIR__ . '/src/LoyaltyService.php';
-require_once __DIR__ . '/src/AnalyticsClient.php';
-require_once __DIR__ . '/src/BookingService.php';
+// Models
+require_once __DIR__ . '/src/Models/Customer.php';
+require_once __DIR__ . '/src/Models/Ticket.php';
+require_once __DIR__ . '/src/Models/BookingItem.php';
+require_once __DIR__ . '/src/Models/Booking.php';
+
+// Services
+require_once __DIR__ . '/src/Services/DiscountCalculator.php';
+require_once __DIR__ . '/src/Services/LoyaltyService.php';
+require_once __DIR__ . '/src/Services/BookingService.php';
+
+// Infrastructure
+require_once __DIR__ . '/src/Infrastructure/StripeClient.php';
+require_once __DIR__ . '/src/Infrastructure/PayFastSdk.php';
+require_once __DIR__ . '/src/Infrastructure/EmailService.php';
+require_once __DIR__ . '/src/Infrastructure/SmsClient.php';
+require_once __DIR__ . '/src/Infrastructure/AnalyticsClient.php';

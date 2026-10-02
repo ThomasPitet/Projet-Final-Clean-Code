@@ -5,7 +5,8 @@ class DiscountCalculator {
 
         if($customer->isVip() && $total < 100) $total *= 0.95;                          //remise 5 %
 
-        if($customer->isVip() && 100 <= $total && $total < 300) $total *= 0.90;         //remise 10 %
+        $isBetween100And300 = 100 <= $total && $total < 300;
+        if($customer->isVip() && $isBetween100And300) $total *= 0.90;                   //remise 10 %
 
         if($customer->isVip() && $total >= 300) $total *= 0.85;                         //remise 15 %
 
