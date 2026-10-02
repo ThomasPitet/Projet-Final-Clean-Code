@@ -23,3 +23,4 @@ require_once __DIR__ . '/src/Infrastructure/StripeClient.php';
 require_once __DIR__ . '/src/Infrastructure/StripeAdapter.php';
 require_once __DIR__ . '/src/Infrastructure/PayFastSdk.php';
 require_once __DIR__ . '/src/Infrastructure/PayFastAdapter.php';
+require_once __DIR__ . '/src/Infrastructure/SupervisedPaymentGateway.php';

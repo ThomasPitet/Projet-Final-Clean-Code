@@ -165,7 +165,46 @@ $tests->near(50.0, $payfastTotal, 'payfast total is correct');
 $tests->same(true, str_contains($payfastOutput, 'PAYMENT payfast_'), 'payfast output contains payfast transaction id');
 
 // ============================================================
-// SECTION 5 : Scénario index.php (caractérisation exacte)
+// SECTION 5 : Supervision des paiements
+// ============================================================
+
+$successfulGateway = new class implements PaymentGateway {
+    public function pay(float $amount)
+    {
+        echo "PAYMENT test_{$amount}" . PHP_EOL;
+    }
+};
+
+ob_start();
+(new SupervisedPaymentGateway($successfulGateway))->pay(42.5);
+$supervisedSuccessOutput = ob_get_clean();
+
+$tests->same(true, str_contains($supervisedSuccessOutput, 'Demande de paiement de 42.5'), 'supervision logs the requested amount');
+$tests->same(true, str_contains($supervisedSuccessOutput, 'Paiement réussi en '), 'supervision logs successful payment and duration');
+
+$failingGateway = new class implements PaymentGateway {
+    public function pay(float $amount)
+    {
+        throw new RuntimeException('Payment declined');
+    }
+};
+
+ob_start();
+try {
+    (new SupervisedPaymentGateway($failingGateway))->pay(19.99);
+    $supervisedFailureThrown = false;
+} catch (RuntimeException $e) {
+    $supervisedFailureThrown = ($e->getMessage() === 'Payment declined');
+}
+$supervisedFailureOutput = ob_get_clean();
+
+$tests->same(true, str_contains($supervisedFailureOutput, 'Demande de paiement de 19.99'), 'failed payment logs the requested amount');
+$tests->same(true, str_contains($supervisedFailureOutput, 'Échec du paiement (Payment declined)'), 'supervision logs payment failure');
+$tests->same(true, str_contains($supervisedFailureOutput, 'Paiement échoué en '), 'supervision logs failed payment duration');
+$tests->same(true, $supervisedFailureThrown, 'supervision rethrows the payment exception');
+
+// ============================================================
+// SECTION 6 : Scénario index.php (caractérisation exacte)
 // ============================================================
 
 ob_start();
