@@ -35,16 +35,28 @@ $tests->near(100.0, $standardTotal, 'standard customer keeps initial total');
 $tests->same('confirmed', $standard->status, 'booking becomes confirmed');
 
 ob_start();
+$vip = createBooking('vip', 'day', 45.0, 2);
+$vipTotal = $service->confirm($vip, 'stripe');
+ob_end_clean();
+$tests->near(85.5, $vipTotal, 'legacy VIP rule gives 5 percent discount when total is under 100');
+
+ob_start();
 $vip = createBooking('vip', 'day', 50.0, 2);
 $vipTotal = $service->confirm($vip, 'stripe');
 ob_end_clean();
-$tests->near(90.0, $vipTotal, 'legacy VIP rule gives 10 percent discount');
+$tests->near(90.0, $vipTotal, 'legacy VIP rule gives 10 percent discount when total is between 100 and 299.99');
+
+ob_start();
+$vip = createBooking('vip', 'day', 250.0, 2);
+$vipTotal = $service->confirm($vip, 'stripe');
+ob_end_clean();
+$tests->near(425.0, $vipTotal, 'legacy VIP rule gives 15 percent discount when total is more than 300');
 
 ob_start();
 $threeDays = createBooking('standard', '3days', 60.0, 2);
 $threeDaysTotal = $service->confirm($threeDays, 'stripe');
 ob_end_clean();
-$tests->near(110.0, $threeDaysTotal, 'legacy three day pass discount is 10 euros');
+$tests->near(100.0, $threeDaysTotal, 'legacy three day pass discount is 20 euros');
 
 // VIP + 3 jours combinés
 ob_start();
@@ -52,7 +64,7 @@ $vipThreeDays = createBooking('vip', '3days', 100.0, 1);
 $vipThreeDaysTotal = $service->confirm($vipThreeDays, 'stripe');
 ob_end_clean();
 // 100 * 0.90 = 90 - 10 = 80
-$tests->near(80.0, $vipThreeDaysTotal, 'VIP + 3days: VIP discount applied first then 3days discount');
+$tests->near(70.0, $vipThreeDaysTotal, 'VIP + 3days: VIP discount applied first then 3days discount');
 
 // Ticket unique sans remise
 ob_start();
