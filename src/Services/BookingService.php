@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 final class BookingService
 {
-    public function confirm(Booking $booking, PaymentGateway|string $paymentMethod = 'stripe'): float
+    public function confirm(Booking $booking, mixed $paymentMethod = null): float
     {
+        if ($paymentMethod === null) {
+            $paymentMethod = new StripeAdapter();
+        }
         $customer = $booking->customer;
 
         if (count($booking->items) === 0) {
@@ -39,8 +42,8 @@ final class BookingService
 
         echo "SQL INSERT booking={$booking->id} total={$total} status={$booking->status}" . PHP_EOL;
 
-        $emailService = new EmailService();
-        $emailService->sendConfirmation($customer->email, $booking->id);
+        $clientService = new ClientService();
+        $clientService->service($booking, $customer, $total);
 
         return $total;
     }
