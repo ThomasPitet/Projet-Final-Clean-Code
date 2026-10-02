@@ -26,6 +26,6 @@ $booking = new Booking(
 $booking->addItem(new BookingItem($dayTicket, 2));
 
 $service = new BookingService();
-$total = $service->confirm($booking, 'stripe');
+$total = $service->confirm($booking, new PayFastAdapter());
 
 echo 'TOTAL FINAL: ' . number_format($total, 2, '.', '') . PHP_EOL;

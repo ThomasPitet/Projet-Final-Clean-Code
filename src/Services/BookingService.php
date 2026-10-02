@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 final class BookingService
 {
-    public function confirm(Booking $booking, string $paymentMethod = 'stripe'): float
+    public function confirm(Booking $booking, PaymentGateway|string $paymentMethod = 'stripe'): float
     {
         $customer = $booking->customer;
 
@@ -28,18 +28,14 @@ final class BookingService
 
         // Logique des réductions
         $total = (new DiscountCalculator())->calculateTotalDiscount($total, $customer, $booking->passType);
-
-        if ($paymentMethod === 'stripe') {
-            $stripe = new StripeClient();
-            $transactionId = $stripe->charge($total);
-            echo "PAYMENT {$transactionId}" . PHP_EOL;
-        } elseif ($paymentMethod === 'payfast') {
-            throw new RuntimeException('PayFast not implemented');
-        } else {
+        
+        if (!$paymentMethod instanceof PaymentGateway) {
             throw new RuntimeException('Unknown payment method');
         }
 
         $booking->status = 'confirmed';
+
+        $paymentMethod->pay($total);
 
         echo "SQL INSERT booking={$booking->id} total={$total} status={$booking->status}" . PHP_EOL;
 

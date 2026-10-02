@@ -155,17 +155,14 @@ try {
 }
 $tests->same(true, $unknownPaymentThrown, 'unknown payment method throws RuntimeException');
 
-// PayFast non implémenté
-$payfastThrown = false;
-try {
-    ob_start();
-    $payfastBooking = createBooking('standard', 'day', 50.0, 1);
-    $service->confirm($payfastBooking, 'payfast');
-    ob_end_clean();
-} catch (RuntimeException $e) {
-    $payfastThrown = ($e->getMessage() === 'PayFast not implemented');
-}
-$tests->same(true, $payfastThrown, 'payfast throws RuntimeException not implemented');
+// PayFast implémenté
+ob_start();
+$payfastBooking = createBooking('standard', 'day', 50.0, 1);
+$payfastTotal = $service->confirm($payfastBooking, 'payfast');
+$payfastOutput = ob_get_clean();
+
+$tests->near(50.0, $payfastTotal, 'payfast total is correct');
+$tests->same(true, str_contains($payfastOutput, 'PAYMENT payfast_'), 'payfast output contains payfast transaction id');
 
 // ============================================================
 // SECTION 5 : Scénario index.php (caractérisation exacte)
