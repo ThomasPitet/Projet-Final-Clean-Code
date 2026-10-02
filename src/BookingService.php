@@ -6,11 +6,13 @@ final class BookingService
 {
     public function confirm(Booking $booking, string $paymentMethod = 'stripe'): float
     {
+        $customer = $booking->customer;
+
         if (count($booking->items) === 0) {
             throw new RuntimeException('Empty booking');
         }
 
-        if (!filter_var($booking->customer->email, FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($customer->email, FILTER_VALIDATE_EMAIL)) {
             throw new RuntimeException('Invalid email');
         }
 
@@ -24,15 +26,15 @@ final class BookingService
             $total += $item->ticket->price * $item->quantity;
         }
 
-        // Ancienne règle VIP : remise fixe de 10 %.
-        if ($booking->customer->type === 'vip') {
-            $total *= 0.90;
-        }
+        if($customer->isVip() && $total < 100) $total *= 0.95;                          //remise 5 %
 
-        // Ancienne règle Pass 3 jours : remise fixe de 10 euros.
-        if ($booking->passType === '3days') {
-            $total -= 10.0;
-        }
+        if($customer->isVip() && 100 <= $total && $total < 300) $total *= 0.90;         //remise 10 %
+
+        if($customer->isVip() && $total >= 300) $total *= 0.85;                         //remise 15 %
+
+        if ($booking->passType === '3days') $total -= 20.0;
+
+        if($total < 0) $total = 0;
 
         if ($paymentMethod === 'stripe') {
             $stripe = new StripeClient();
@@ -49,7 +51,7 @@ final class BookingService
         echo "SQL INSERT booking={$booking->id} total={$total} status={$booking->status}" . PHP_EOL;
 
         $emailService = new EmailService();
-        $emailService->sendConfirmation($booking->customer->email, $booking->id);
+        $emailService->sendConfirmation($customer->email, $booking->id);
 
         return $total;
     }

@@ -11,4 +11,8 @@ final class Customer
         public string $type = 'standard'
     ) {
     }
+
+    public function isVip(): bool {
+        return $this->type === 'vip';
+    }
 }
