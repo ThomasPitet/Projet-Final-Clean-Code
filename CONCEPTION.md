@@ -16,8 +16,6 @@ Le projet sépare le traitement d'une réservation en quelques responsabilités 
 - **OCP / LSP :** `StripeAdapter`, `PayFastAdapter` et `SupervisedPaymentGateway` partagent le contrat `PaymentGateway`. On peut substituer ou ajouter une passerelle sans exposer son SDK au service métier.
 - **DIP :** `BookingService` dépend de `PaymentGateway` plutôt que directement de Stripe ou PayFast. Le principe reste partiel : Stripe est instancié par défaut et `ClientService` construit ses propres dépendances.
 
-ISP n'est pas revendiqué : le projet ne définit pas d'interfaces fines pour les autres effets externes.
-
 ## 3. Design Patterns éventuellement utilisés
 
 - **Adapter :** `StripeAdapter` et `PayFastAdapter` traduisent les contrats différents des SDK vers `PaymentGateway`. Cela évite de coupler `BookingService` aux fournisseurs et de modifier leurs clients pour la supervision.
