@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/src/Customer.php';
 require_once __DIR__ . '/src/Ticket.php';
+require_once __DIR__ . '/src/DiscountCalculator.php';
 require_once __DIR__ . '/src/BookingItem.php';
 require_once __DIR__ . '/src/Booking.php';
 require_once __DIR__ . '/src/StripeClient.php';

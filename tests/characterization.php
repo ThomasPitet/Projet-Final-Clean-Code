@@ -63,7 +63,7 @@ ob_start();
 $vipThreeDays = createBooking('vip', '3days', 100.0, 1);
 $vipThreeDaysTotal = $service->confirm($vipThreeDays, 'stripe');
 ob_end_clean();
-// 100 * 0.90 = 90 - 10 = 80
+// 100 * 0.90 = 90 - 20 = 70
 $tests->near(70.0, $vipThreeDaysTotal, 'VIP + 3days: VIP discount applied first then 3days discount');
 
 // Ticket unique sans remise

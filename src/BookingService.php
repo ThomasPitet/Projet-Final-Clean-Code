@@ -26,15 +26,8 @@ final class BookingService
             $total += $item->ticket->price * $item->quantity;
         }
 
-        if($customer->isVip() && $total < 100) $total *= 0.95;                          //remise 5 %
-
-        if($customer->isVip() && 100 <= $total && $total < 300) $total *= 0.90;         //remise 10 %
-
-        if($customer->isVip() && $total >= 300) $total *= 0.85;                         //remise 15 %
-
-        if ($booking->passType === '3days') $total -= 20.0;
-
-        if($total < 0) $total = 0;
+        // Logique des réductions
+        $total = (new DiscountCalculator())->calculateTotalDiscount($total, $customer, $booking->passType);
 
         if ($paymentMethod === 'stripe') {
             $stripe = new StripeClient();
